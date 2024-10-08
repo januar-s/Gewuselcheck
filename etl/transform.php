@@ -3,9 +3,9 @@
 $data = include('extract.php');
 
 // Überprüfen, ob das JSON gültige Daten enthält
-if (!$data || !isset($data['measurements'])) {
-    die('Keine gültigen Daten gefunden.');
-}
+    if (!$data || !isset($data['measurements'])) {
+        die('Keine gültigen Daten gefunden.');
+    }
 
 // Initialisiert ein Array, um die transformierten Daten zu speichern
 $transformedData = [];
@@ -35,7 +35,7 @@ foreach ($data['measurements'] as $measurement) {
     $transformedData[] = [
         'ZEIT' => $zeit,
         'DIRECTION_BAHNHOF' => $direction_bahnhof,
-        'DIRECTION_BUERKIPLATZ' => $direction_buerkliplatz,
+        'DIRECTION_BUERKLIPLATZ' => $direction_buerkliplatz,
         'PASSANTEN_TOTAL' => $total_passanten,
         'WETTER' => $wetter,
         'TEMPERATUR' => $temperatur
@@ -43,5 +43,7 @@ foreach ($data['measurements'] as $measurement) {
 }
 
 // Die transformierten Daten anzeigen (nur zur Kontrolle)
-var_dump($transformedData);
+// var_dump($transformedData);
+
+return $transformedData;
 ?>

@@ -1,12 +1,22 @@
 <?php
+include 'config.php';
 
-function fetchWeatherData() {
-    $url = "https://api.open-meteo.com/v1/forecast?latitude=46.9481,46.8499,47.3667&longitude=7.4474,9.5329,8.55&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,rain,showers,snowfall,cloud_cover&temperature_unit=fahrenheit&timezone=auto&forecast_days=1";
+function fetchData($apikey) {
+    // Erzeuge die aktuelle Zeit (Endzeit) im RFC 3339-Format
+    $currentTime = new DateTime(); // Aktuelle Zeit
+    $currentTime->setTimezone(new DateTimeZone('Europe/Zurich')); // Setze Zeitzone
+    $to = $currentTime->modify('-1 hour')->format(DateTime::RFC3339); // Format als RFC 3339 (aktuelle Zeit)
+    
+    // Erzeuge den Startzeitpunkt (1 Stunde vor der aktuellen Zeit)
+    $from = $currentTime->modify('-1 hour')->format(DateTime::RFC3339); // Eine Stunde früher
+    
+    // Baue die URL mit den dynamischen Zeitparametern
+    $url = "https://api.hystreet.com/v2/locations/331/measurements?from=" . urlencode($from) . "&to=" . urlencode($to) . "&resolution=hour&include_weather_data=true";
 
     $curl = curl_init();
 
     curl_setopt_array($curl, [
-      CURLOPT_URL => "https://api.hystreet.com/v2/locations/331/measurements?from=2024-10-07T12%3A00%3A00%2B02%3A00&to=2024-10-07T15%3A53%3A57Z&resolution=hour&include_weather_data=true",
+      CURLOPT_URL => $url,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
@@ -15,19 +25,19 @@ function fetchWeatherData() {
       CURLOPT_CUSTOMREQUEST => "GET",
       CURLOPT_HTTPHEADER => [
         "Accept: application/json",
-        "X-API-TOKEN: $key"
+        "X-API-TOKEN: $apikey"
       ],
     ]);
-    
+
     $response = curl_exec($curl);
     $err = curl_error($curl);
-    
+
     curl_close($curl);
-    
+
     if ($err) {
       echo "cURL Error #:" . $err;
     } else {
-      echo $response;
+      // echo $response;
     }
 
     // Dekodiert die JSON-Antwort und gibt Daten zurück
@@ -35,5 +45,5 @@ function fetchWeatherData() {
 }
 
 // Gibt die Daten zurück, wenn dieses Skript eingebunden ist
-return fetchWeatherData();
+return fetchData($apikey);
 ?>
