@@ -15,7 +15,7 @@ function fetchWeatherData() {
       CURLOPT_CUSTOMREQUEST => "GET",
       CURLOPT_HTTPHEADER => [
         "Accept: application/json",
-        "X-API-TOKEN: X5WSiuweyHACn7UNs8zAjvCw"
+        "X-API-TOKEN: $key"
       ],
     ]);
     
