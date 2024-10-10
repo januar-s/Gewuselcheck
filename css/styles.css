@@ -10,10 +10,11 @@
 }
 
 body {
-    background-image: url("../bilder/Nacht_regen_BahnhofstrasseZürich.png");
-    background-size: cover;
-    background-attachment: scroll;
-    background-position: center;
+    background-image: url("../bilder/Tag_sonnig_Bahnhofstrasse_Zürich.png"), url("../bilder/Hintergrund_Textur.jpg");
+    background-size: 85%, cover;
+    background-attachment: scroll, scroll;
+    background-position: top, center;
+    background-repeat: no-repeat, repeat;
     width: 100%;
 }
 
@@ -89,10 +90,8 @@ p {
 /* Diagramm über 12 Spalten */
 #divDiagramm {
     grid-column: span 12;
-    background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Footer über 12 Spalten */

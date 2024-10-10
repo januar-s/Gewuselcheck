@@ -8,7 +8,7 @@ function fetchData($apikey) {
     $to = $currentTime->modify('-1 hour')->format(DateTime::RFC3339); // Format als RFC 3339 (aktuelle Zeit)
     
     // Erzeuge den Startzeitpunkt (1 Stunde vor der aktuellen Zeit)
-    $from = $currentTime->modify('-1 hour')->format(DateTime::RFC3339); // Eine Stunde früher
+    $from = $currentTime->modify('-2 hour')->format(DateTime::RFC3339); // Eine Stunde früher
     
     // Baue die URL mit den dynamischen Zeitparametern
     $url = "https://api.hystreet.com/v2/locations/331/measurements?from=" . urlencode($from) . "&to=" . urlencode($to) . "&resolution=hour&include_weather_data=true";
