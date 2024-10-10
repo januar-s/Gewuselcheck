@@ -1,52 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gewusel Check</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://use.typekit.net/lcu6oxm.css">
 </head>
+
 <body>
-    <h3>Bahnhofstrasse (Nord)</h3>
-    <h1 id="datum"></h1>
-    <h1 id="uhrzeit"></h1>
-    <h2 id="menschen"></h2>
-
-    <img src="bilder/" id="bild" alt="Bahnhofstrasse Zürich skizze mit Wetteranzeige">
-    // hier Punkte einfügen
-
-    <p>Heute ist ein <var>wetterTag</var> in Zürich bei <var>temperatur</var>  </p>
-    <p>An einem durchscnittlichen <var>wochentag</var> um <var>zeit</var> sind <var>durchschnittPersonen</var> unterwegs. 
-        Heute sind <var>prozentUnterschied</var> Passanten in der Bahnhofstrasse.</p>
-
-    <div id="divDiagramm">
+    <div id="inhalt">
         <h3>Bahnhofstrasse (Nord)</h3>
-        <h4>Zürich</h4>
+        <h1 id="datum">21.09.2024</h1>
+        <h1 id="uhrzeit">14:00</h1>
+        <h2 id="menschen">1202 Menschen unterwegs</h2>
 
-        <select id="dropdownDiagramm">
-            <option value="optionHeute">Heute <var>wochentag</var></option>
-            <option value="optionGestern">Gestern <var>gestern</var></option>
-            <option value="optionVorgestern">Vorgestern <var>vorgestern</var></option>
-            <option value="optionBenutzerdefiniert"><var>userDatum</var></option>
-        </select>
+        <div id="fliesstext">
+            <p>Heute ist ein <var>wetterTag</var> in Zürich bei <var>temperatur</var> </p>
+            <p>An einem durchschnittlichen <var>wochentag</var> um <var>zeit</var> sind <var>durchschnittPersonen</var>
+                unterwegs.
+                Heute sind <var>prozentUnterschied</var> Passanten in der Bahnhofstrasse.</p>
+        </div>
 
-        <div id="my-chart">
+        <div id="divDiagramm">
+            <h3>Bahnhofstrasse (Nord)</h3>
+            <h4>Zürich</h4>
 
-            <table class="charts-css line">
-              ...
-            </table>
-          
-            <ul class="charts-css legend">
-              ...
-            </ul>
-          
-          </div>
+            <select id="dropdownDiagramm">
+                <option value="optionHeute">Heute <var>wochentag</var></option>
+                <option value="optionGestern">Gestern <var>gestern</var></option>
+                <option value="optionVorgestern">Vorgestern <var>vorgestern</var></option>
+                <option value="optionBenutzerdefiniert"><var>userDatum</var></option>
+            </select>
+
+            <div id="my-chart">
+                <table class="charts-css line">
+                    ...
+                </table>
+                <ul class="charts-css legend">
+                    ...
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <h4>Ein Projekt von Cyrill Felder <br> und Jan Schmidt an der FHGR</h4>
+            <h4>Mit freundlicher Unterstützung von hystreet.com</h4>
+        </footer>
     </div>
-
-    <footer>
-        <h4>Ein Projekt von Cyrill Felder <br> und Jan Schmidt an der FHGR</h4>
-        <h4>Mit freundlicher Unterstützung von hystreet.com</h4>
-    </footer>
-
     <script src="js/scripts.js"></script>
 </body>
+
 </html>

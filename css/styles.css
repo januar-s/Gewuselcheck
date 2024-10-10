@@ -1,0 +1,142 @@
+/* Grid Layout für den Hauptcontainer */
+#inhalt {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    /* 12 Spalten */
+    grid-column-gap: 20px;
+    /* Abstand zwischen den Grid-Elementen */
+    margin: 10px;
+    /* Außenabstand des Containers */
+}
+
+body {
+    background-image: url("../bilder/Nacht_regen_BahnhofstrasseZürich.png");
+    background-size: cover;
+    background-attachment: scroll;
+    background-position: center;
+    width: 100%;
+}
+
+/* Sinnvolle Platzierung der Elemente im Grid */
+/* Beispiel: Überschrift über die gesamte Breite */
+h3 {
+    grid-column: 2 / span 10;
+    font-size: 1.5em;
+    color: #333;
+    margin: 0;
+    font-weight: bold;
+    font-family: akzidenz-grotesk, sans-serif;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+/* Datum und Uhrzeit nebeneinander */
+h1 {
+    font-family: "ff-typestar-ocr-web-pro", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 10em;
+    margin: 0;
+}
+
+h1#datum {
+    grid-column: 2/ span 7;
+    text-align: left;
+}
+
+h1#uhrzeit {
+    grid-column: 9 / span 3;
+    text-align: right;
+}
+
+/* Passanten-Anzahl über die gesamte Breite */
+h2 {
+    font-family: "ff-typestar-ocr-web-pro", sans-serif;
+    font-weight: 400;
+    font-size: 7em;
+    font-style: normal;
+    margin: 0;
+}
+
+h2#menschen {
+    grid-column: 2/ span 10;
+    text-align: left;
+}
+
+/* Bild über die gesamte Breite */
+img#bild {
+    grid-column: 2 / span 10;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Text über 12 Spalten */
+p {
+    grid-column: span 12;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* Text über 6 Spalten */
+#fliesstext {
+    grid-column: 2/ span 6;
+    margin: 0;
+    margin-top: 100vh;
+}
+
+/* Diagramm über 12 Spalten */
+#divDiagramm {
+    grid-column: span 12;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer über 12 Spalten */
+footer {
+    grid-column: span 12;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Dropdown Styling */
+#dropdownDiagramm {
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 1em;
+    border-radius: 5px;
+    width: 100%;
+}
+
+/* Diagramm-Container */
+#my-chart {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Medienabfrage für kleinere Bildschirme */
+@media (max-width: 768px) {
+    #inhalt {
+        grid-template-columns: repeat(6, 1fr);
+        /* 6 Spalten auf kleineren Bildschirmen */
+    }
+
+    h1#datum,
+    h1#uhrzeit {
+        grid-column: span 6;
+        /* Auf kleinen Bildschirmen beide H1s untereinander */
+    }
+
+    #divDiagramm,
+    h2#menschen,
+    img#bild,
+    footer {
+        grid-column: span 6;
+        /* Diese Elemente nehmen weiterhin die volle Breite ein */
+    }
+}
