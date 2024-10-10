@@ -64,13 +64,25 @@ h2#menschen {
     text-align: left;
 }
 
-/* Bild über die gesamte Breite */
-img#bild {
-    grid-column: 2 / span 10;
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+#trapez {
+    grid-row: 4;
+    grid-column: span 12;
+    width: 90vw;
+    height: 25vh;
+    clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
+    /* background-color: #e0e0e0;  */
+    position: relative;
+    overflow: hidden;
+    margin-top: 48vh;
+    margin-left: 5vw;
+  }
+  
+  .point {
+    width: 16px;
+    height: 8px;
+    background-color: #0077ff;
+    border-radius: 50%;
+    position: absolute;
 }
 
 /* Text über 12 Spalten */
@@ -82,9 +94,10 @@ p {
 
 /* Text über 6 Spalten */
 #fliesstext {
+    grid-row: 5;
     grid-column: 2/ span 6;
     margin: 0;
-    margin-top: 100vh;
+    margin-top: 20vh;
 }
 
 /* Diagramm über 12 Spalten */

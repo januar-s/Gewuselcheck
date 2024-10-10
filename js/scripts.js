@@ -47,6 +47,69 @@ fetch(url)
         }        
         if (data.PASSANTEN_TOTAL) {
             document.getElementById('menschen').textContent = `${data.PASSANTEN_TOTAL} Menschen unterwegs`;
+        
+            // Berechne die Anzahl der Punkte basierend auf PASSANTEN_TOTAL
+            const numPoints = Math.floor(data.PASSANTEN_TOTAL / 10);
+        
+            // Anzahl der Punkte und Geschwindigkeitsparameter
+            const maxSpeed = 2;
+            const area = document.getElementById("trapez");
+        
+            // Funktion zur Erzeugung eines zufälligen Wertes innerhalb eines Bereichs
+            function getRandom(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+        
+            // Entferne vorherige Punkte, falls vorhanden
+            while (area.firstChild) {
+                area.removeChild(area.firstChild);
+            }
+        
+            // Initialisiere die Punkte und füge sie dem Trapez hinzu
+            const points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const point = document.createElement("div");
+                point.classList.add("point");
+                point.style.left = getRandom(0, area.clientWidth) + "px";
+                point.style.top = getRandom(0, area.clientHeight) + "px";
+                
+                // Bewegungsgeschwindigkeit in X- und Y-Richtung
+                point.vx = getRandom(-maxSpeed, maxSpeed);
+                point.vy = getRandom(-maxSpeed, maxSpeed);
+        
+                points.push(point);
+                area.appendChild(point);
+            }
+        
+            // Animationsfunktion
+            function animate() {
+                points.forEach(point => {
+                    let x = parseFloat(point.style.left);
+                    let y = parseFloat(point.style.top);
+        
+                    // Aktualisiere die Position des Punktes
+                    x += point.vx;
+                    y += point.vy;
+        
+                    // Pralle von den Wänden des Trapezes ab
+                    if (x <= 0 || x >= area.clientWidth - 8) {
+                        point.vx *= -1;
+                    }
+                    if (y <= 0 || y >= area.clientHeight - 8) {
+                        point.vy *= -1;
+                    }
+        
+                    // Setze die neue Position
+                    point.style.left = x + "px";
+                    point.style.top = y + "px";
+                });
+        
+                // Setze die Animation in Bewegung
+                requestAnimationFrame(animate);
+            }
+        
+            // Starte die Animation
+            animate();
         }
         if (data.WETTER) {
             // Split the ZEIT to get time information for day or night check
@@ -88,4 +151,4 @@ fetch(url)
     .catch(error => {
         // Handle any errors that occur during the fetch
         console.error('There was a problem with the fetch operation:', error);
-    });
+    });    
