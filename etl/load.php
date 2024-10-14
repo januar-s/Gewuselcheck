@@ -26,7 +26,7 @@ try {
     $checkStmt = $pdo->prepare($checkSql);
     $updateStmt = $pdo->prepare($updateSql);
 
-    var_dump($transformedData);
+    // var_dump($transformedData);
 
     // Fügt jedes transformierte Datenelement in die Datenbank ein, wenn es noch nicht existiert, oder aktualisiert es
     foreach ($transformedData as $item) {

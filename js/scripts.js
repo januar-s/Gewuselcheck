@@ -23,13 +23,32 @@ function translateWeatherToGerman(weatherCondition) {
         'partly-cloudy-night': 'leicht bewölkt',
         'cloudy': 'bewölkt',
         'rain': 'regnerisch',
-        'wind': 'windig',
-        'fog': 'neblig',
+        'wind': 'wolkig',
+        'fog': 'wolkig',
         'snow': 'schneereich',
-        'sleet': 'Schneeregen'
+        'sleet': 'schneereich'
     };
 
     return weatherMap[weatherCondition] || 'unbekannt'; // Return 'unbekannt' if not found
+}
+
+// Funktion zur Bestimmung der Hintergrundfarbe basierend auf dem Wetter
+function getWeatherBackgroundColor(weatherCondition) {
+    const weatherColorMap = {
+        'clear-day': '#FFD700',     // Sonnig - Gelb
+        'clear-night': '#125ba2',   // Klar - Blau
+        'partly-cloudy-day': '#87CEEB',  // Leicht bewölkt - Hellblau
+        'partly-cloudy-night': '#708090', // Leicht bewölkt Nacht - Grau
+        'cloudy': '#87CEEB',        // Bewölkt - Lichtblau
+        'rain': '#4682B4',          // Regen - Blau
+        'wind': '#4682B4',          // Windig - Türkis
+        'fog': '#4682B4',           // Neblig - Grau
+        'snow': '#b8bfc2',          // Schneereich - Weiß
+        'sleet': '#b8bfc2',         // Schneeregen - Hellblau
+        'unbekannt': '#8f9acc'      // Default
+    };
+
+    return weatherColorMap[weatherCondition] || weatherColorMap['unbekannt']; // Fallback-Farbe
 }
 
 // Fetch the data from PHP
@@ -59,75 +78,21 @@ fetch(url)
             document.getElementById('zeitFliesstext').textContent = timeShort;
         }
 
-        if (data.PASSANTEN_TOTAL) {
-            document.getElementById('menschen').textContent = `${data.PASSANTEN_TOTAL} Menschen unterwegs`;
-
-            const averagePeople = 50; // Placeholder value for average number of people
-            document.getElementById('durchschnittPersonen').textContent = `${averagePeople}`;
-
-            const percentDifference = ((data.PASSANTEN_TOTAL - averagePeople) / averagePeople * 100).toFixed(2);
-            document.getElementById('prozentUnterschied').textContent = `${percentDifference}% mehr`;
-
-            const numPoints = Math.floor(data.PASSANTEN_TOTAL / 10);
-            const maxSpeed = 2;
-            const area = document.getElementById("trapez");
-
-            function getRandom(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
-            while (area.firstChild) {
-                area.removeChild(area.firstChild);
-            }
-
-            const points = [];
-            for (let i = 0; i < numPoints; i++) {
-                const point = document.createElement("div");
-                point.classList.add("point");
-                point.style.left = getRandom(0, area.clientWidth) + "px";
-                point.style.top = getRandom(0, area.clientHeight) + "px";
-
-                point.vx = getRandom(-maxSpeed, maxSpeed);
-                point.vy = getRandom(-maxSpeed, maxSpeed);
-
-                points.push(point);
-                area.appendChild(point);
-            }
-
-            function animate() {
-                points.forEach(point => {
-                    let x = parseFloat(point.style.left);
-                    let y = parseFloat(point.style.top);
-
-                    x += point.vx;
-                    y += point.vy;
-
-                    if (x <= 0 || x >= area.clientWidth - 8) {
-                        point.vx *= -1;
-                    }
-                    if (y <= 0 || y >= area.clientHeight - 8) {
-                        point.vy *= -1;
-                    }
-
-                    point.style.left = x + "px";
-                    point.style.top = y + "px";
-                });
-
-                requestAnimationFrame(animate);
-            }
-
-            animate();
-        }
-
         if (data.WETTER) {
+            console.log('Wetter:', data.WETTER);
             const timePart = data.ZEIT.split(' ')[1];
             const dayOrNight = isDaytime(timePart) ? 'Tag' : 'Nacht';
             let weatherCondition = data.WETTER;
-
+        
             // Insert translated weather condition into the "wetterAktuell" element
             const wetterAufDeutsch = translateWeatherToGerman(weatherCondition);
-            document.getElementById('wetterAktuell').textContent = wetterAufDeutsch;
-
+            const wetterAktuellElement = document.getElementById('wetterAktuell');
+            wetterAktuellElement.textContent = `${wetterAufDeutsch}`;
+        
+            // Set the background color of the wetterAktuell element
+            const backgroundColor = getWeatherBackgroundColor(weatherCondition);
+            wetterAktuellElement.style.backgroundColor = backgroundColor;
+        
             if (weatherCondition === 'wind' || weatherCondition === 'fog') {
                 weatherCondition = 'wolkig';
             } else if (weatherCondition === 'sleet') {
@@ -144,17 +109,94 @@ fetch(url)
                 };
                 weatherCondition = weatherMap[weatherCondition] || 'wolkig';
             }
-
+        
             const backgroundImagePath = `../bilder/${dayOrNight}_${weatherCondition}_Bahnhofstrasse_Zürich.png`;
-            document.body.style.backgroundImage = `url("${backgroundImagePath}"), url("../bilder/Hintergrund_Textur.jpg")`;
+            document.getElementById('inhalt').style.backgroundImage = `url("${backgroundImagePath}")`;
+        }
+        
+
+        if (data.PASSANTEN_TOTAL) {
+            document.getElementById('menschen').textContent = `${data.PASSANTEN_TOTAL} Menschen unterwegs`;
+
+            const averagePeople = 50; // Placeholder value for average number of people
+            document.getElementById('durchschnittPersonen').textContent = `${averagePeople}`;
+
+            const percentDifference = ((data.PASSANTEN_TOTAL - averagePeople) / averagePeople * 100).toFixed(2);
+            document.getElementById('prozentUnterschied').textContent = `${percentDifference}% mehr`;
+
+            // Setze die minimalen und maximalen Geschwindigkeitsparameter
+            const minSpeed = 0.5;  // Minimaler Speed
+            const maxSpeed = 2;    // Maximaler Speed
+            const numPoints = Math.floor(data.PASSANTEN_TOTAL / 10);
+            const area = document.getElementById("trapez");
+
+            // Funktion zur Erzeugung eines zufälligen Wertes innerhalb eines Bereichs
+            function getRandom(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            // Lösche vorherige Punkte, falls vorhanden
+            while (area.firstChild) {
+                area.removeChild(area.firstChild);
+            }
+
+            const points = [];
+            for (let i = 0; i < numPoints; i++) {
+                const point = document.createElement("div");
+                point.classList.add("point");
+                point.style.left = getRandom(0, area.clientWidth) + "px";
+                point.style.top = getRandom(0, area.clientHeight) + "px";
+
+                // Setze zufällige Geschwindigkeiten innerhalb des minimalen und maximalen Bereichs
+                point.vx = getRandom(minSpeed, maxSpeed);
+                point.vy = getRandom(minSpeed, maxSpeed);
+
+                // Zufällige negative Geschwindigkeiten für Richtung
+                if (Math.random() > 0.5) point.vx *= -1;
+                if (Math.random() > 0.5) point.vy *= -1;
+
+                points.push(point);
+                area.appendChild(point);
+            }
+
+            // Animationsfunktion
+            function animate() {
+                points.forEach(point => {
+                    let x = parseFloat(point.style.left);
+                    let y = parseFloat(point.style.top);
+
+                    // Aktualisiere die Position des Punktes
+                    x += point.vx;
+                    y += point.vy;
+
+                    // Pralle von den Wänden des Trapezes ab
+                    if (x <= 0 || x >= area.clientWidth - 8) {
+                        point.vx *= -1;
+                    }
+                    if (y <= 0 || y >= area.clientHeight - 8) {
+                        point.vy *= -1;
+                    }
+
+                    // Setze die neue Position
+                    point.style.left = x + "px";
+                    point.style.top = y + "px";
+                });
+
+                // Starte die Animation
+                requestAnimationFrame(animate);
+            }
+
+            // Starte die Animation
+            animate();
+
         }
     })
     .catch(error => {
         console.error('Fehler beim Abrufen der Daten:', error);
-    }); 
-    
-    
-    
+    });
+
+
+
 // Chart.js Bibliothek einbinden (CDN-Link)
 const chartScript = document.createElement('script');
 chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';

@@ -1,35 +1,45 @@
 /* Grid Layout für den Hauptcontainer */
 #inhalt {
     width: 1400px;
-    justify-content: center;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     /* 12 Spalten */
     grid-column-gap: 20px;
     /* Abstand zwischen den Grid-Elementen */
-    margin: 10px;
-    /* Außenabstand des Containers */
+    margin: 10px auto;
+    background-size: 100%;
+    background-attachment: scroll;
+    background-position: top;
+    background-repeat: no-repeat;
 }
 
 body {
-    background-image: url("../bilder/Tag_sonnig_Bahnhofstrasse_Zürich.png"), url("../bilder/Hintergrund_Textur.jpg");
-    background-size: 85%, cover;
-    background-attachment: scroll, scroll;
-    background-position: top, center;
-    background-repeat: no-repeat, repeat;
+    background-image: url(../bilder/Hintergrund_Textur.jpg);
+    background-size: cover;
+    background-attachment: scroll;
+    background-position: center;
+    background-repeat: repeat;
     width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 /* Sinnvolle Platzierung der Elemente im Grid */
 /* Beispiel: Überschrift über die gesamte Breite */
 h3 {
-    grid-column: 2 / span 10;
+    grid-column: span 12;
     font-size: 1.5em;
     color: #333;
     margin: 0;
-    font-weight: bold;
-    font-family: akzidenz-grotesk, sans-serif;
+    padding: 0;
+    font-family: "familjen-grotesk", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     text-transform: uppercase;
     text-align: left;
+    line-height: 1;
+    margin-block-start: 0;
+    margin-block-end: 0;
 }
 
 /* Datum und Uhrzeit nebeneinander */
@@ -37,51 +47,61 @@ h1 {
     font-family: "ff-typestar-ocr-web-pro", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 15vh;
+    font-size: 7em;
     margin: 0;
+    padding: 0;
+    line-height: 1;
+    margin-block-start: 0;
+    margin-block-end: 0;
 }
 
 h1#datum {
-    grid-column: 2/ span 7;
+    grid-column: span 8;
     text-align: left;
 }
 
 h1#uhrzeit {
-    grid-column: 9 / span 3;
+    grid-column: 9 / span 4;
     text-align: right;
+}
+
+#anzahlMenschen {
+    grid-column: span 12;
+    display: flex;
 }
 
 /* Passanten-Anzahl über die gesamte Breite */
 h2 {
-    font-family: "ff-typestar-ocr-web-pro", sans-serif;
-    font-weight: 400;
-    font-size: 10vh;
+    font-family: "familjen-grotesk", sans-serif;
+    font-weight: 500;
     font-style: normal;
+    font-size: 5em;
+    color: #f57469;
     margin: 0;
-}
-
-h2#menschen {
-    grid-column: 2/ span 10;
-    text-align: left;
+    padding: 0;
+    line-height: 1;
+    color: #f7f6f2;
+    background-color: #8f9acc;
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-style: normal;
 }
 
 #trapez {
     grid-row: 4;
     grid-column: span 12;
-    width: 90vw;
-    height: 25vh;
+    height: 250px;
     clip-path: polygon(40% 0, 60% 0, 100% 100%, 0% 100%);
     /* background-color: #e0e0e0;  */
     position: relative;
     overflow: hidden;
-    margin-top: 48vh;
-    margin-left: 5vw;
+    margin-top: 500px;
   }
   
   .point {
     width: 16px;
     height: 8px;
-    background-color: #0077ff;
+    background-color: #f7f6f2;
     border-radius: 50%;
     position: absolute;
 }
@@ -91,26 +111,29 @@ p {
     grid-column: span 12;
     font-size: 1.1em;
     margin: 0;
+    padding: 0;
 }
 
 /* Text über 6 Spalten */
 #fliesstext {
     grid-row: 5;
-    grid-column: 4/ span 6;
+    grid-column: 3/ span 8;
     margin: 0;
+    padding: 0;
     margin-top: 20vh;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "familjen-grotesk", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     font-size: 5vh;
-    display: flex;
-    align-items: center;
-    justify-content: center; 
+    line-height: 1.2;
 }
 
-#fliesstext > p {
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 2%;
-    margin-right: 2%;
+var {
+    color: #f7f6f2;
+    background-color: #8f9acc;
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-style: normal;
 }
 
 /* Diagramm über 12 Spalten */
