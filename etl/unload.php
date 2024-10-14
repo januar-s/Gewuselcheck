@@ -7,7 +7,7 @@ require 'config.php';
         $pdo = new PDO($dsn, $username, $password, $options);
 
         // SQL query to get the latest entry based on time (ZEIT)
-        $sql = "SELECT ZEIT, PASSANTEN_TOTAL, WETTER FROM passanten ORDER BY ZEIT DESC LIMIT 1";
+        $sql = "SELECT ZEIT, PASSANTEN_TOTAL, WETTER, TEMPERATUR FROM passanten ORDER BY ZEIT DESC LIMIT 1";
 
         // Prepare the statement
         $stmt = $pdo->prepare($sql);

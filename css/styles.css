@@ -1,5 +1,7 @@
 /* Grid Layout für den Hauptcontainer */
 #inhalt {
+    width: 1400px;
+    justify-content: center;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     /* 12 Spalten */
@@ -17,7 +19,6 @@ body {
     background-repeat: no-repeat, repeat;
     width: 100%;
 }
-
 /* Sinnvolle Platzierung der Elemente im Grid */
 /* Beispiel: Überschrift über die gesamte Breite */
 h3 {
@@ -125,10 +126,15 @@ footer {
     width: 100%;
 }
 
-/* Diagramm-Container */
 #my-chart {
-    margin-top: 20px;
-    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
 }
 
 /* Medienabfrage für kleinere Bildschirme */
@@ -151,15 +157,4 @@ footer {
         grid-column: span 6;
         /* Diese Elemente nehmen weiterhin die volle Breite ein */
     }
-}
-
-#my-chart {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-canvas {
-    width: 100% !important;
-    height: auto !important;
 }

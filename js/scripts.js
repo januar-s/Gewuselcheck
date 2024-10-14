@@ -7,124 +7,132 @@ function isDaytime(timePart) {
     return hour >= 6 && hour < 18; // Assume daytime is between 6 AM and 6 PM
 }
 
+// Function to get the weekday name
+function getWeekday(dateString) {
+    const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+    const date = new Date(dateString);
+    return days[date.getUTCDay()]; // Get the day of the week (0=Sunday, 6=Saturday)
+}
+
+// Function to translate weather condition into German
+function translateWeatherToGerman(weatherCondition) {
+    const weatherMap = {
+        'clear-day': 'sonnig',
+        'clear-night': 'klar',
+        'partly-cloudy-day': 'leicht bewölkt',
+        'partly-cloudy-night': 'leicht bewölkt',
+        'cloudy': 'bewölkt',
+        'rain': 'regnerisch',
+        'wind': 'windig',
+        'fog': 'neblig',
+        'snow': 'schneereich',
+        'sleet': 'Schneeregen'
+    };
+
+    return weatherMap[weatherCondition] || 'unbekannt'; // Return 'unbekannt' if not found
+}
+
 // Fetch the data from PHP
 fetch(url)
     .then(response => {
-        // Check if the response is OK (status code 200)
         if (!response.ok) {
             throw new Error('Network response was not OK');
         }
-        // Parse the response JSON
         return response.json();
     })
     .then(data => {
-        // Log the data to the console (for testing)
         console.log('Fetched Data:', data);
-        
-        // Example: Use the data to update HTML elements
-        // Assuming you have HTML elements to display the fetched data:
-        // <div id="time"></div>
-        // <div id="passantenTotal"></div>
-        // <div id="wetter"></div>
 
+        if (data.TEMPERATUR) {
+            const temperature = parseFloat(data.TEMPERATUR).toFixed(1);
+            document.getElementById('temperatur').textContent = `${temperature}°C`;
+        }
         if (data.ZEIT) {
-            // Split the ZEIT string into date and time parts
             const [datePart, timePart] = data.ZEIT.split(' ');
-
-                // Split the datePart (YYYY-MM-DD) into year, month, and day
-                const [year, month, day] = datePart.split('-');
-
-                // Format the date as DD.MM.YYYY
-                const formattedDate = `${day}.${month}.${year}`;
-        
-            // Insert the date into the element with id "datum"
-            document.getElementById('datum').textContent = `${formattedDate}`;
-        
-            // Insert the time (HH:MM only) into the element with id "uhrzeit"
+            const [year, month, day] = datePart.split('-'); // YYYY-MM-DD
+            const formattedDate = `${day}.${month}.${year}`; // Format date as DD.MM.YYYY
             const timeShort = timePart.substring(0, 5); // Extract HH:MM
-            document.getElementById('uhrzeit').textContent = `${timeShort}`;
 
-        }        
+            document.getElementById('datum').textContent = `${formattedDate}`;
+            document.getElementById('uhrzeit').textContent = `${timeShort}`;
+            document.getElementById('wochentag').textContent = getWeekday(datePart);
+            document.getElementById('zeitFliesstext').textContent = timeShort;
+        }
+
         if (data.PASSANTEN_TOTAL) {
             document.getElementById('menschen').textContent = `${data.PASSANTEN_TOTAL} Menschen unterwegs`;
-        
-            // Berechne die Anzahl der Punkte basierend auf PASSANTEN_TOTAL
+
+            const averagePeople = 50; // Placeholder value for average number of people
+            document.getElementById('durchschnittPersonen').textContent = `${averagePeople}`;
+
+            const percentDifference = ((data.PASSANTEN_TOTAL - averagePeople) / averagePeople * 100).toFixed(2);
+            document.getElementById('prozentUnterschied').textContent = `${percentDifference}% mehr`;
+
             const numPoints = Math.floor(data.PASSANTEN_TOTAL / 10);
-        
-            // Anzahl der Punkte und Geschwindigkeitsparameter
             const maxSpeed = 2;
             const area = document.getElementById("trapez");
-        
-            // Funktion zur Erzeugung eines zufälligen Wertes innerhalb eines Bereichs
+
             function getRandom(min, max) {
                 return Math.random() * (max - min) + min;
             }
-        
-            // Entferne vorherige Punkte, falls vorhanden
+
             while (area.firstChild) {
                 area.removeChild(area.firstChild);
             }
-        
-            // Initialisiere die Punkte und füge sie dem Trapez hinzu
+
             const points = [];
             for (let i = 0; i < numPoints; i++) {
                 const point = document.createElement("div");
                 point.classList.add("point");
                 point.style.left = getRandom(0, area.clientWidth) + "px";
                 point.style.top = getRandom(0, area.clientHeight) + "px";
-                
-                // Bewegungsgeschwindigkeit in X- und Y-Richtung
+
                 point.vx = getRandom(-maxSpeed, maxSpeed);
                 point.vy = getRandom(-maxSpeed, maxSpeed);
-        
+
                 points.push(point);
                 area.appendChild(point);
             }
-        
-            // Animationsfunktion
+
             function animate() {
                 points.forEach(point => {
                     let x = parseFloat(point.style.left);
                     let y = parseFloat(point.style.top);
-        
-                    // Aktualisiere die Position des Punktes
+
                     x += point.vx;
                     y += point.vy;
-        
-                    // Pralle von den Wänden des Trapezes ab
+
                     if (x <= 0 || x >= area.clientWidth - 8) {
                         point.vx *= -1;
                     }
                     if (y <= 0 || y >= area.clientHeight - 8) {
                         point.vy *= -1;
                     }
-        
-                    // Setze die neue Position
+
                     point.style.left = x + "px";
                     point.style.top = y + "px";
                 });
-        
-                // Setze die Animation in Bewegung
+
                 requestAnimationFrame(animate);
             }
-        
-            // Starte die Animation
+
             animate();
         }
+
         if (data.WETTER) {
-            // Split the ZEIT to get time information for day or night check
-            const timePart = data.ZEIT.split(' ')[1]; 
-            const dayOrNight = isDaytime(timePart) ? 'Tag' : 'Nacht'; // 'Tag' for day, 'Nacht' for night
-        
+            const timePart = data.ZEIT.split(' ')[1];
+            const dayOrNight = isDaytime(timePart) ? 'Tag' : 'Nacht';
             let weatherCondition = data.WETTER;
-        
-            // Map specific conditions to similar image categories
+
+            // Insert translated weather condition into the "wetterAktuell" element
+            const wetterAufDeutsch = translateWeatherToGerman(weatherCondition);
+            document.getElementById('wetterAktuell').textContent = wetterAufDeutsch;
+
             if (weatherCondition === 'wind' || weatherCondition === 'fog') {
-                weatherCondition = isDaytime(timePart) ? 'wolkig' : 'wolkig'; // Use cloudy images
+                weatherCondition = 'wolkig';
             } else if (weatherCondition === 'sleet') {
-                weatherCondition = 'Schnee'; // Treat sleet as snow
+                weatherCondition = 'Schnee';
             } else {
-                // Map other weather conditions to specific translations for filenames
                 const weatherMap = {
                     'clear-day': 'sonnig',
                     'clear-night': 'wolkenlos',
@@ -134,26 +142,20 @@ fetch(url)
                     'rain': 'regen',
                     'snow': 'Schnee'
                 };
-        
-                weatherCondition = weatherMap[weatherCondition] || 'wolkig'; // Default to 'wolkig' if no match
+                weatherCondition = weatherMap[weatherCondition] || 'wolkig';
             }
-        
-            // Create the background image path based on day or night and the weather condition
+
             const backgroundImagePath = `../bilder/${dayOrNight}_${weatherCondition}_Bahnhofstrasse_Zürich.png`;
-        
-            // Apply the background image using JavaScript
             document.body.style.backgroundImage = `url("${backgroundImagePath}"), url("../bilder/Hintergrund_Textur.jpg")`;
-        
-            // Log the applied background for debugging purposes
-            console.log(`Applied background image: ${backgroundImagePath}`);
         }
     })
     .catch(error => {
-        // Handle any errors that occur during the fetch
-        console.error('There was a problem with the fetch operation:', error);
-    });    
-
-    // Chart.js Bibliothek einbinden (CDN-Link)
+        console.error('Fehler beim Abrufen der Daten:', error);
+    }); 
+    
+    
+    
+// Chart.js Bibliothek einbinden (CDN-Link)
 const chartScript = document.createElement('script');
 chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
 document.head.appendChild(chartScript);
