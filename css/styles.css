@@ -152,3 +152,14 @@ footer {
         /* Diese Elemente nehmen weiterhin die volle Breite ein */
     }
 }
+
+#my-chart {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
+}

@@ -152,3 +152,53 @@ fetch(url)
         // Handle any errors that occur during the fetch
         console.error('There was a problem with the fetch operation:', error);
     });    
+
+    // Chart.js Bibliothek einbinden (CDN-Link)
+const chartScript = document.createElement('script');
+chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+document.head.appendChild(chartScript);
+
+chartScript.onload = () => {
+    // Funktion, um die Grafik mit neuen Daten zu aktualisieren
+    function updateChart(chart, data) {
+        chart.data.datasets[0].data = data; // Update data
+        chart.update();
+    }
+
+    // Diagramm initialisieren, wenn das Script geladen ist
+    const ctx = document.getElementById('passantenChart').getContext('2d');
+    const passantenChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+            datasets: [{
+                label: 'Passanten',
+                data: [], // Die Daten werden später hinzugefügt
+                borderColor: '#4e5d8a',
+                backgroundColor: 'rgba(78, 93, 138, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4 // Glättung des Graphen
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 2800 // Setze das Maximum der Y-Achse auf 2800, wie im Bild
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Daten von der API holen und das Diagramm aktualisieren
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const passantenData = data.PASSANTEN_TIMESERIES || []; // Ersetze mit deinem tatsächlichen Daten-Array
+            updateChart(passantenChart, passantenData);
+        })
+        .catch(error => console.error('Fehler beim Abrufen der Daten:', error));
+};
