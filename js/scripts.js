@@ -62,12 +62,17 @@ fetch(url)
     .then(data => {
         console.log('Fetched Data:', data);
 
-        if (data.TEMPERATUR) {
-            const temperature = parseFloat(data.TEMPERATUR).toFixed(1);
+        const latestEntry = data.latestEntry;
+
+        // Populate temperature from the latest entry
+        if (latestEntry.TEMPERATUR) {
+            const temperature = parseFloat(latestEntry.TEMPERATUR).toFixed(1);
             document.getElementById('temperatur').textContent = `${temperature}°C`;
         }
-        if (data.ZEIT) {
-            const [datePart, timePart] = data.ZEIT.split(' ');
+
+        // Populate date and time from the latest entry
+        if (latestEntry.ZEIT) {
+            const [datePart, timePart] = latestEntry.ZEIT.split(' ');
             const [year, month, day] = datePart.split('-'); // YYYY-MM-DD
             const formattedDate = `${day}.${month}.${year}`; // Format date as DD.MM.YYYY
             const timeShort = timePart.substring(0, 5); // Extract HH:MM
@@ -78,64 +83,70 @@ fetch(url)
             document.getElementById('zeitFliesstext').textContent = timeShort;
         }
 
-        if (data.WETTER) {
-            console.log('Wetter:', data.WETTER);
-            const timePart = data.ZEIT.split(' ')[1];
+        // Handle weather condition
+        if (latestEntry.WETTER) {
+            console.log('Wetter:', latestEntry.WETTER);
+            const timePart = latestEntry.ZEIT.split(' ')[1];
             const dayOrNight = isDaytime(timePart) ? 'Tag' : 'Nacht';
-            let weatherCondition = data.WETTER;
-        
+            let weatherCondition = latestEntry.WETTER;
+
             // Insert translated weather condition into the "wetterAktuell" element
             const wetterAufDeutsch = translateWeatherToGerman(weatherCondition);
             const wetterAktuellElement = document.getElementById('wetterAktuell');
             wetterAktuellElement.textContent = `${wetterAufDeutsch}`;
-        
+
             // Set the background color of the wetterAktuell element
             const backgroundColor = getWeatherBackgroundColor(weatherCondition);
             wetterAktuellElement.style.backgroundColor = backgroundColor;
-        
-            if (weatherCondition === 'wind' || weatherCondition === 'fog') {
-                weatherCondition = 'wolkig';
-            } else if (weatherCondition === 'sleet') {
-                weatherCondition = 'Schnee';
-            } else {
-                const weatherMap = {
-                    'clear-day': 'sonnig',
-                    'clear-night': 'wolkenlos',
-                    'partly-cloudy-day': 'wolkig',
-                    'partly-cloudy-night': 'wolkig',
-                    'cloudy': 'wolkig',
-                    'rain': 'regen',
-                    'snow': 'Schnee'
-                };
-                weatherCondition = weatherMap[weatherCondition] || 'wolkig';
-            }
-        
+
+            // Adjust the background image based on weather
+            const weatherMap = {
+                'clear-day': 'sonnig',
+                'clear-night': 'wolkenlos',
+                'partly-cloudy-day': 'wolkig',
+                'partly-cloudy-night': 'wolkig',
+                'cloudy': 'wolkig',
+                'rain': 'regen',
+                'snow': 'Schnee'
+            };
+            weatherCondition = weatherMap[weatherCondition] || 'wolkig';
+
             const backgroundImagePath = `../bilder/${dayOrNight}_${weatherCondition}_Bahnhofstrasse_Zürich.png`;
             document.getElementById('inhalt').style.backgroundImage = `url("${backgroundImagePath}")`;
         }
-        
 
-        if (data.PASSANTEN_TOTAL) {
-            document.getElementById('menschen').textContent = `${data.PASSANTEN_TOTAL} Menschen unterwegs`;
+        // Handle PASSANTEN_TOTAL for the latest entry and matching entries
+        if (latestEntry.PASSANTEN_TOTAL) {
+            document.getElementById('menschen').textContent = `${latestEntry.PASSANTEN_TOTAL} Menschen unterwegs`;
 
-            const averagePeople = 50; // Placeholder value for average number of people
-            document.getElementById('durchschnittPersonen').textContent = `${averagePeople}`;
+            // Calculate the average from the "passanten" array
+            const passanten = data.passanten;
+            if (passanten.length > 0) {
+                const total = passanten.reduce((acc, val) => acc + val, 0);
+                const averagePeople = Math.round(total / passanten.length); // Round to nearest integer
 
-            const percentDifference = ((data.PASSANTEN_TOTAL - averagePeople) / averagePeople * 100).toFixed(2);
-            document.getElementById('prozentUnterschied').textContent = `${percentDifference}% mehr`;
+                document.getElementById('durchschnittPersonen').textContent = `${averagePeople}`;
 
-            // Setze die minimalen und maximalen Geschwindigkeitsparameter
+                // Calculate the percentage difference and round it to the nearest integer
+                const percentDifference = Math.round((latestEntry.PASSANTEN_TOTAL - averagePeople) / averagePeople * 100);
+
+                // Display "mehr" if more than the average, otherwise display "weniger"
+                const differenceText = percentDifference > 0 ? 'mehr' : 'weniger';
+                document.getElementById('prozentUnterschied').textContent = `${Math.abs(percentDifference)}% ${differenceText}`;
+            }
+
+            // Set up animation with points based on PASSANTEN_TOTAL
             const minSpeed = 0.5;  // Minimaler Speed
             const maxSpeed = 2;    // Maximaler Speed
-            const numPoints = Math.floor(data.PASSANTEN_TOTAL / 10);
+            const numPoints = Math.floor(latestEntry.PASSANTEN_TOTAL / 10);
             const area = document.getElementById("trapez");
 
-            // Funktion zur Erzeugung eines zufälligen Wertes innerhalb eines Bereichs
+            // Function to generate random value within a range
             function getRandom(min, max) {
                 return Math.random() * (max - min) + min;
             }
 
-            // Lösche vorherige Punkte, falls vorhanden
+            // Remove previous points, if any
             while (area.firstChild) {
                 area.removeChild(area.firstChild);
             }
@@ -147,11 +158,11 @@ fetch(url)
                 point.style.left = getRandom(0, area.clientWidth) + "px";
                 point.style.top = getRandom(0, area.clientHeight) + "px";
 
-                // Setze zufällige Geschwindigkeiten innerhalb des minimalen und maximalen Bereichs
+                // Set random speeds within the minimum and maximum range
                 point.vx = getRandom(minSpeed, maxSpeed);
                 point.vy = getRandom(minSpeed, maxSpeed);
 
-                // Zufällige negative Geschwindigkeiten für Richtung
+                // Randomly reverse the direction
                 if (Math.random() > 0.5) point.vx *= -1;
                 if (Math.random() > 0.5) point.vy *= -1;
 
@@ -159,17 +170,17 @@ fetch(url)
                 area.appendChild(point);
             }
 
-            // Animationsfunktion
+            // Animation function
             function animate() {
                 points.forEach(point => {
                     let x = parseFloat(point.style.left);
                     let y = parseFloat(point.style.top);
 
-                    // Aktualisiere die Position des Punktes
+                    // Update the point's position
                     x += point.vx;
                     y += point.vy;
 
-                    // Pralle von den Wänden des Trapezes ab
+                    // Bounce off the trapezoid walls
                     if (x <= 0 || x >= area.clientWidth - 8) {
                         point.vx *= -1;
                     }
@@ -177,72 +188,16 @@ fetch(url)
                         point.vy *= -1;
                     }
 
-                    // Setze die neue Position
+                    // Set the new position
                     point.style.left = x + "px";
                     point.style.top = y + "px";
                 });
 
-                // Starte die Animation
+                // Start the animation
                 requestAnimationFrame(animate);
             }
 
-            // Starte die Animation
+            // Start the animation
             animate();
-
-        }
-    })
-    .catch(error => {
-        console.error('Fehler beim Abrufen der Daten:', error);
+        };
     });
-
-
-
-// Chart.js Bibliothek einbinden (CDN-Link)
-const chartScript = document.createElement('script');
-chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-document.head.appendChild(chartScript);
-
-chartScript.onload = () => {
-    // Funktion, um die Grafik mit neuen Daten zu aktualisieren
-    function updateChart(chart, data) {
-        chart.data.datasets[0].data = data; // Update data
-        chart.update();
-    }
-
-    // Diagramm initialisieren, wenn das Script geladen ist
-    const ctx = document.getElementById('passantenChart').getContext('2d');
-    const passantenChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
-            datasets: [{
-                label: 'Passanten',
-                data: [], // Die Daten werden später hinzugefügt
-                borderColor: '#4e5d8a',
-                backgroundColor: 'rgba(78, 93, 138, 0.2)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4 // Glättung des Graphen
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 2800 // Setze das Maximum der Y-Achse auf 2800, wie im Bild
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-
-    // Daten von der API holen und das Diagramm aktualisieren
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            const passantenData = data.PASSANTEN_TIMESERIES || []; // Ersetze mit deinem tatsächlichen Daten-Array
-            updateChart(passantenChart, passantenData);
-        })
-        .catch(error => console.error('Fehler beim Abrufen der Daten:', error));
-};
