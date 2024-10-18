@@ -51,6 +51,30 @@ function getWeatherBackgroundColor(weatherCondition) {
     return weatherColorMap[weatherCondition] || weatherColorMap['unbekannt']; // Fallback-Farbe
 }
 
+// Funktion zur Änderung der Textfarbe für alle h1-Elemente basierend auf Tag oder Nacht und Bildschirmgröße
+function changeH1ColorForNight(isDaytime) {
+    const h1Elements = document.querySelectorAll('h1'); // Wählt alle h1-Elemente aus
+
+    // Prüfen, ob die Bildschirmbreite größer als 600px ist
+    if (window.matchMedia("(min-width: 600px)").matches) {
+        // Wenn die Breite größer als 600px ist, Farbe entsprechend ändern
+        h1Elements.forEach(h1Element => {
+            if (!isDaytime) {
+                // Es ist Nacht, ändere die Farbe aller h1-Elemente zu var(--white)
+                h1Element.style.color = 'var(--white)';
+            } else {
+                // Tagsüber setze eine Standardfarbe für alle h1 (z.B. schwarz)
+                h1Element.style.color = 'var(--black)';
+            }
+        });
+    } else {
+        // Falls die Breite kleiner als 600px ist, lass die Farbe unverändert oder setze eine andere Standardfarbe, falls nötig
+        h1Elements.forEach(h1Element => {
+            h1Element.style.color = ''; // Entfernt die Inline-Stile, falls vorhanden
+        });
+    }
+}
+
 // Fetch the data from PHP
 fetch(url)
     .then(response => {
@@ -81,6 +105,10 @@ fetch(url)
             document.getElementById('uhrzeit').textContent = `${timeShort}`;
             document.getElementById('wochentag').textContent = getWeekday(datePart);
             document.getElementById('zeitFliesstext').textContent = timeShort;
+
+            // Check if it is day or night and update the h1 color accordingly
+            const isDay = isDaytime(timePart); // Check if it's day
+            changeH1ColorForNight(isDay); // Change h1 color if it's night
         }
 
         // Handle weather condition
